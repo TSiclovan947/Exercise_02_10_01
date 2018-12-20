@@ -54,10 +54,10 @@ class OnlineStore {
                     $this->inventory[$row['productID']]['price'] = $row['price'];
                     $this->shoppingCart[$row['productID']] = 0;
                 }
-                echo "<pre>\n";
-                print_r($this->inventory);
-                print_r($this->shoppingCart);
-                echo "</pre>\n";
+//                echo "<pre>\n";
+//                print_r($this->inventory);
+//                print_r($this->shoppingCart);
+//                echo "</pre>\n";
             }
         }
     }
@@ -76,6 +76,62 @@ class OnlineStore {
             }
         }
         return $retval;
+    }
+    
+    //Pull data from inventory array, format into table that can go on the screen, self contained
+    //Add shopping cart functionality
+    public function getProductList() {
+        $retval = false;
+        $subtotal = 0;
+        //If inventory greater than 0
+        if (count($this->inventory) > 0) {
+            //if have inventory, want to set up a table
+            echo "<table width='100%'>\n";
+            echo "<tr>";
+            echo "<th>Product</th>\n";
+            echo "<th>Description</th>\n";
+            echo "<th>Price Each</th>\n";
+            echo "<th># in Cart</th>\n";
+            echo "<th>Total Price</th>\n";
+            echo "<th>&nbsp;</th>\n";
+            echo "</tr>";
+            //in inventory array
+            //Will have name of associative ID and value in the other
+            foreach ($this->inventory as $ID => $info) {
+                echo "<tr>";
+                echo "<tr><td>" . htmlentities($info['name']) . "</td>\n";
+                echo "<td>" . htmlentities($info['description']) . "</td>\n";
+                //f=floating point number
+                //printf allows for styles to display
+                printf("<td class='currency'>$%.2f</td>", $info['price']);
+                echo "<td class='currency'>" . 
+                    $this->shoppingCart[$ID] . "</td>";
+                printf("<td class='currency'>$%.2f</td>", $info['price'] * $this->shoppingCart[$ID]);
+                echo "<td><a href='" . 
+                    $_SERVER['SCRIPT_NAME'] . 
+                    "?PHPSESSID=" . session_id() . 
+                    "&ItemToAdd=$ID'>Add Item</a></td>";
+                $subtotal += ($info['price'] * $this->shoppingCart[$ID]);
+                echo "</tr>\n";
+            }
+            echo "<tr>";
+            echo "<td colspan='4'>Subtotal</td>";
+            printf("<td class='currency'>$%.2f</td>", $subtotal);
+            echo "</tr>";
+            echo "</table>\n";
+            $retval = true;
+        }
+        
+        return($retval);
+    }
+    
+    //utility function, not getter or setter
+    //designed to add object to shopping Cart
+    public function addItem() {
+        $prodID = $_GET['ItemToAdd'];
+        if (array_key_exists($prodID, $this->shoppingCart)) {
+            $this->shoppingCart[$prodID] += 1;
+        }
     }
 }
 ?>
