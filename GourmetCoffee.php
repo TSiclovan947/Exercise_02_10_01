@@ -2,7 +2,7 @@
 session_start();
 require_once("inc_OnlineStoresDB.php");
 require_once("class_OnlineStore.php");
-$storeID = "ELECBOUT";
+$storeID = "COFFEE";
 $storeInfo = array();
 if (class_exists("OnlineStore")) {
     //Go call constructor for dollar store
